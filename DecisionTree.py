@@ -148,17 +148,54 @@ class DecisionTree:
             current.right = self.buildTree(rightX, rightLabels, depth + 1)
         return current
     
-    def fit(self, X, labels):
-        self.root = self.buildTree(X, labels, 0)
+    def sample(self, X, labels, percent):
+        """Randomly samples a certain proportion of the data and labels.
+        Parameters
+        ----------
+        X : List[List[float]]
+        labels : List[int]
+        percent : float
+        Returns
+        -------
+        X2 : List[List[float]]
+        labels2 : List[int]
+        """
+        indices = [i for i in range(len(X))]
+        random.shuffle(indices)
+        bound = int(len(X) * percent)
+        X2, labels2 = [], []
+        for i in range(bound):
+            X2.append(X[indices[i]])
+            labels2.append(labels[indices[i]])
+        return X2, labels2
+    
+    def fit(self, X, labels, rootNumber = 1, percent = 0.8):
+        if rootNumber % 2 == 0:
+            print("Parameter rootNumber must be odd.")
+            exit()
+        self.roots = []
+        self.rootNumber = rootNumber
+        for i in range(rootNumber):
+            X2, labels2 = self.sample(X, labels, percent)
+            self.roots.append(self.buildTree(X, labels, 0))
         
     def predict(self, X):
         results = []
         for i in range(len(X)):
-            current = self.root
-            while current.label is None:
-                if X[i][current.targetIndex] < current.targetValue:
-                    current = current.left
-                else:
-                    current = current.right
-            results.append(current.label)
-        return results
+            result = []
+            for root in self.roots:
+                current = root
+                while current.label is None:
+                    if X[i][current.targetIndex] < current.targetValue:
+                        current = current.left
+                    else:
+                        current = current.right
+                result.append(current.label)
+            results.append(result)
+        finalResults = []
+        for i in range(len(X)):
+            votes = []
+            for j in range(len(self.roots)):
+                votes.append(results[i][j])
+            finalResults.append(np.bincount(votes).argmax())
+        return finalResults
