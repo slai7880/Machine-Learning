@@ -90,20 +90,22 @@ class NeuralNetwork:
                     YTrue, YPredict, self.outputs = [], [], []
     
     def predict(self, X):
-        YPredict = []
+        outputs = []
         for i in range(len(X)):
-            YPredict.append(X[i])
-        return YPredict
+            outputs.append(np.squeeze(np.array(self.forward(X[i]))))
+        return outputs.argmax(axis = 1)
         
     def forward(self, x):
-        YPredict = x.T
+        output = x.T
         for i in range(len(self.W)):
-            output = self.W[i] * np.vstack((YPredict, np.matrix([[1]])))
-            self.outputs.append(output)
-            YPredict = self.activate(output)
-        y = [0] * self.NClass
-        y[np.squeeze(np.array(YPredict)).argmax()] = 1
-        return y
+            A = self.W[i] * np.vstack((self.activate(output), np.matrix([[1]])))
+            self.outputs.append(A)
+            if i < len(self.W) - 1:
+                output = self.activate(A)
+            else:
+                temp = np.exp(output - np.max(A))
+                YPredict = temp / temp.sum()
+        return output
         
         
     def backprog(self, YTrue, YPredict, regularC):
