@@ -92,8 +92,5 @@ def getData(dataset):
 
 X, labels = getData("banknote")
 XTrain, XTest, YTrain, YTest = splitData(X, labels)
-classifier = DecisionTree(maxDepth = 5, minRecords = 10)
-classifier.fit(XTrain, YTrain, 3)
-results = classifier.predict(XTest)
-accuracy = getAccuracy(results, YTest)
-print(accuracy)
+clf = NeuralNetwork([4, 4])
+clf.fit(XTrain, YTrain)
