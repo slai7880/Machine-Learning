@@ -13,7 +13,7 @@ import random
 from sys import exit, maxsize
 
 class NeuralNetwork:
-    def __init__(self, nodes): # nodes do not include the biases
+    def __init__(self, nodes):
         """
         Initializes the object.
         Parameters
@@ -36,10 +36,17 @@ class NeuralNetwork:
         for i in range(1, len(nodes)):
             weights = np.random.normal(size = (nodes[i], nodes[i - 1] + 1))
             self.W.append(weights)
-        # set the default activation function
-        self.setActivationFunction(self.sigmoid, self.dSigmoid)
+        
+        # set up the activation functions
+        self.activations = {"sigmoid" : self.sigmoid,
+                            "tanh" : self.tanh,
+                            "relu" : self.relu}
+        self.dActivations = {"sigmoid" : self.dSigmoid,
+                            "tanh" : self.dTanh,
+                            "relu" : self.dRelu}
+        self.setActivationFunction("sigmoid")
     
-    def setActivationFunction(self, activate, dActivate):
+    def setActivationFunction(self, type):
         """
         Sets the avtivation function and its corresponding derivative.
         Parameters
@@ -49,8 +56,8 @@ class NeuralNetwork:
         -------
         None
         """
-        self.activate = activate
-        self.dActivate = dActivate
+        self.activate = self.activations[type]
+        self.dActivate = self.dActivations[type]
     
     #################################################################
     # Default activation function and its derivative.
@@ -59,6 +66,23 @@ class NeuralNetwork:
         
     def dSigmoid(self, x):
         return np.multiply(self.sigmoid(x), 1 - self.sigmoid(x))
+    
+    def tanh(self, x):
+        return np.tanh(x)
+    
+    def dTanh(self, x):
+        return 1 - np.multiply(self.tanh(x), self.tanh(x))
+        
+    def relu(self, x):
+        return np.maximum(0 * x.copy(), x)
+        
+    def dRelu(self, x):
+        result = x.copy()
+        for i in range(result.shape[0]):
+            for j in range(result.shape[1]):
+                if result[i, j] > 0:
+                    result[i, j] = 1
+        return result
     
     #################################################################
     
@@ -149,7 +173,7 @@ class NeuralNetwork:
             Each element is a probability array from the last layer
             of the network.
         """
-        if isinstance(X, list):
+        if isinstance(X, list): # just for convention
             X = np.matrix(X)
         results = []
         for i in range(X.shape[0]):
@@ -211,7 +235,7 @@ class NeuralNetwork:
         Parameters
         ----------
         YTrue : List[numpy array]
-            Each element should be a one hot encoding of a sample.
+            Each element should be a one hot encoding of a sample label.
         probabilities : List[numpy array]
             Each elelemt should be a probability array from the last layer.
         regularC : float

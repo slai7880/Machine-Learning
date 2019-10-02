@@ -94,6 +94,7 @@ def getData(dataset):
 X, labels = getData("banknote")
 XTrain, XTest, YTrain, YTest = splitData(X, labels)
 clf = NeuralNetwork([4])
+clf.setActivationFunction("sigmoid")
 clf.fit(XTrain, YTrain, epochs = 20, learningRate = 0.01, regularC = 0.001, verbose = True)
 YPredict = clf.predict(XTest).argmax(axis = 1)
 print(YPredict[:20])
