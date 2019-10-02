@@ -7,7 +7,7 @@ import random
 from sys import exit, maxsize
 from sklearn import datasets
 from sklearn import svm
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix
 
 from NeuralNetworks import *
 from SVM import *
@@ -93,8 +93,9 @@ def getData(dataset):
 
 X, labels = getData("banknote")
 XTrain, XTest, YTrain, YTest = splitData(X, labels)
-clf = NeuralNetwork([4, 4])
-clf.fit(XTrain, YTrain, batch = 4)
-YPredict = clf.predict(XTest)
+clf = NeuralNetwork([4])
+clf.fit(XTrain, YTrain, epochs = 20, learningRate = 0.01, regularC = 0.001, verbose = True)
+YPredict = clf.predict(XTest).argmax(axis = 1)
 print(YPredict[:20])
 print(accuracy_score(YTest, YPredict))
+print(confusion_matrix(YTest, YPredict))
