@@ -226,8 +226,8 @@ class NeuralNetwork:
                 delta.insert(0, np.multiply(self.dActivate(outputsBatch[i][j]), self.W[j][:, :-1].T * delta[0]))
             for j in range(len(self.W)):
                 gradientsBatch[j] += delta[j] * np.hstack((self.activate(outputsBatch[i][j]).T, np.matrix([[1]])))
-        for j in range(len(self.W)):
-            self.W[j] = (1 - learningRate * regularC) * self.W[j] - learningRate * gradientsBatch[j]
+        for i in range(len(self.W)):
+            self.W[i] = (1 - learningRate * regularC) * self.W[i] - learningRate * gradientsBatch[i]
     
     def getLoss(self, YTrue, probabilities, regularC):
         """
