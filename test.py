@@ -7,6 +7,7 @@ import random
 from sys import exit, maxsize
 from sklearn import datasets
 from sklearn import svm
+from sklearn.metrics import accuracy_score
 
 from NeuralNetworks import *
 from SVM import *
@@ -93,4 +94,7 @@ def getData(dataset):
 X, labels = getData("banknote")
 XTrain, XTest, YTrain, YTest = splitData(X, labels)
 clf = NeuralNetwork([4, 4])
-clf.fit(XTrain, YTrain)
+clf.fit(XTrain, YTrain, batch = 4)
+YPredict = clf.predict(XTest)
+print(YPredict[:20])
+print(accuracy_score(YTest, YPredict))
