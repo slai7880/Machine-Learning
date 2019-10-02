@@ -193,7 +193,7 @@ class NeuralNetwork:
         outputs : List[numpy matrix]
             The outputs per layer before activation.
         """
-        outputs = [x.T] # stores the outputs for each layer 
+        outputs = [x.T] # stores the outputs for each layer  as column vectors
         for i in range(len(self.W)):
             # the extra 1 is the bias term
             inputVector = np.vstack((self.activate(outputs[-1]), np.matrix([[1]])))
